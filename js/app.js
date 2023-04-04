@@ -1,7 +1,13 @@
 const form = document.querySelector('#generator-form');
 const numberFrom = document.querySelector('#numberFrom');
 const numberTo = document.querySelector('#numberTo');
-const randomNumber = document.querySelector('#randomNumber')
+const randomNumber = document.querySelector('#randomNumber');
+const randomNums = [];
+
+if (sessionStorage.getItem("randomNums")) {
+  const randomNumsFromLS = JSON.parse(sessionStorage.getItem("randomNums"));
+  randomNums.push(...randomNumsFromLS);
+}
 
 const validateInput = (input) => {
   if (!input.value) {
@@ -35,6 +41,23 @@ const checkMinMax = (input1, input2) => {
   }
 }
 
+const generateTrueRandomNumber = function generate(min, max) {
+  checkLimit(randomNums.length, max);
+  const randomNum = Math.round(Math.random() * (max - min) + min);
+  if (randomNums.includes(randomNum)) {
+    return generate(min, max);
+  } else {
+    return randomNum;
+  }
+}
+
+const checkLimit = (numLength, maxValue) => {
+  if (numLength === maxValue) {
+    modalWrapper.classList.remove("d-none");
+    return;
+  }
+}
+
 const handleGeneratorForm = (evt) => {
   evt.preventDefault();
   if (!validateInput(numberFrom)) return;
@@ -44,7 +67,10 @@ const handleGeneratorForm = (evt) => {
   const min = Math.ceil(parseInt(numberFrom.value));
   const max = Math.floor(parseInt(numberTo.value));
   randomNumber.classList.add('tracking-in-expand-fwd-bottom');
-  randomNumber.textContent = Math.round(Math.random() * (max - min) + min);
+  const randomNum = generateTrueRandomNumber(min, max);
+  randomNums.push(randomNum);
+  sessionStorage.setItem("randomNums", JSON.stringify([...randomNums]));
+  randomNumber.textContent = randomNum;
   setTimeout(() => {
     randomNumber.classList.remove('tracking-in-expand-fwd-bottom');
   }, 1000);

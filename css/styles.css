@@ -39,3 +39,9 @@
         opacity: 1;
     }
 }
+
+@media (min-width: 992px) {
+    .max-w-md-50 {
+        max-width: 50%;
+    }
+}
